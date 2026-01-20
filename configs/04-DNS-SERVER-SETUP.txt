@@ -1,0 +1,85 @@
+DNS SERVER CONFIGURATION FOR CISCO PACKET TRACER
+================================================
+
+Steps to Configure DNS Records:
+======================================
+
+1. Click DNSServer → Click "Config" tab
+2. In the left panel, click "DNS"
+3. Click "Add" button for each record below
+
+A RECORDS (FORWARD LOOKUP)
+==========================
+
+Record 1:
+Name: company.local
+Address: 10.0.10.1
+Type: A (Address)
+Click "Add"
+
+Record 2:
+Name: dhcp.company.local
+Address: 10.0.10.5
+Type: A
+Click "Add"
+
+Record 3:
+Name: dns.company.local
+Address: 10.0.10.6
+Type: A
+Click "Add"
+
+Record 4:
+Name: finance.company.local
+Address: 10.0.20.1
+Type: A
+Click "Add"
+
+Record 5:
+Name: engineering.company.local
+Address: 10.0.30.1
+Type: A
+Click "Add"
+
+Record 6:
+Name: admin.company.local
+Address: 10.0.10.2
+Type: A
+Click "Add"
+
+Record 7:
+Name: mail.company.local
+Address: 10.0.10.10
+Type: A
+Click "Add"
+
+PTR RECORDS (REVERSE LOOKUP)
+============================
+
+Record 1:
+Name: 1.10.0.10.in-addr.arpa
+Address: company.local
+Type: PTR
+Click "Add"
+
+Record 2:
+Name: 5.10.0.10.in-addr.arpa
+Address: dhcp.company.local
+Type: PTR
+Click "Add"
+
+Record 3:
+Name: 6.10.0.10.in-addr.arpa
+Address: dns.company.local
+Type: PTR
+Click "Add"
+
+4. Go to "Services" tab
+5. Verify DNS service shows as "ON" or "Running"
+6. Done! DNS server is ready.
+
+VERIFICATION:
+=============
+From any client, run:
+nslookup dhcp.company.local
+Should return: 10.0.10.5
