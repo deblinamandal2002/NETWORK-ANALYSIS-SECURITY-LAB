@@ -1,0 +1,200 @@
+========================================
+NETWORK VERIFICATION & TESTING GUIDE
+========================================
+
+Run these tests in order. All should PASS ✓
+
+========================================
+TEST 1: DHCP ASSIGNMENT
+========================================
+
+On each client PC:
+1. Click "Command Prompt"
+2. Type: ipconfig
+
+EXPECTED:
+- IP: 10.0.X.100-254 (matching VLAN)
+- Subnet: 255.255.255.0
+- Gateway: 10.0.X.1
+- DNS: 10.0.10.6
+
+PASS: If all values match expected ranges
+FAIL: If IP is 0.0.0.0 or 169.x.x.x (APIPA)
+
+========================================
+TEST 2: PING GATEWAY
+========================================
+
+From AdminPC1:
+ping 10.0.10.1
+
+EXPECTED OUTPUT:
+Reply from 10.0.10.1: bytes=32 time=2ms TTL=255
+Reply from 10.0.10.1: bytes=32 time=2ms TTL=255
+Reply from 10.0.10.1: bytes=32 time=2ms TTL=255
+Reply from 10.0.10.1: bytes=32 time=2ms TTL=255
+
+PASS: 4 successful replies, 0% loss
+FAIL: All timeouts or request timed out
+
+========================================
+TEST 3: DNS RESOLUTION
+========================================
+
+From any client:
+nslookup dhcp.company.local
+
+EXPECTED OUTPUT:
+Server: dns.company.local
+Address: 10.0.10.6
+
+Name: dhcp.company.local
+Address: 10.0.10.5
+
+PASS: Resolves correctly to 10.0.10.5
+FAIL: "Server not found" or timeout
+
+========================================
+TEST 4: INTER-VLAN COMMUNICATION (ALLOWED)
+========================================
+
+From AdminPC1 (VLAN 10) to FinancePC1 (VLAN 20):
+ping 10.0.20.100
+
+EXPECTED OUTPUT:
+Reply from 10.0.20.100: bytes=32 time=5ms TTL=253
+(Note: TTL=253 because packet crossed 2 routers)
+
+PASS: Successful ping, crosses VLANs
+FAIL: Request timed out
+
+========================================
+TEST 5: GUEST VLAN ISOLATION
+========================================
+
+From GuestPC1 (VLAN 40) try to access Admin:
+ping 10.0.10.100
+
+EXPECTED OUTPUT:
+Destination host unreachable
+Request timed out
+Request timed out
+
+PASS: ALL pings blocked (security working!)
+FAIL: Any successful replies (ACL not working)
+
+========================================
+TEST 6: ROUTER STATUS VERIFICATION
+========================================
+
+On Router (CLI):
+
+Command: show ip interface brief
+
+EXPECTED:
+Interface              IP-Address      Status
+GigabitEthernet 0/0    10.0.10.1       up up
+GigabitEthernet 0/1    10.0.20.1       up up
+GigabitEthernet 0/2    10.0.30.1       up up
+GigabitEthernet 0/3    10.0.40.1       up up
+
+PASS: All interfaces "up up"
+FAIL: Any interface "down down"
+
+---
+
+Command: show vlan brief
+
+EXPECTED:
+VLAN Name          Status
+10   Admin         active
+20   Finance       active
+30   Engineering   active
+40   Guest         active
+
+PASS: All 4 VLANs listed as active
+FAIL: Any VLAN missing or suspended
+
+---
+
+Command: show access-lists
+
+EXPECTED:
+Shows ALLOW_INTER_VLAN and SSH_RESTRICT ACLs
+With permit/deny rules listed
+
+PASS: Both ACLs visible with rules
+FAIL: ACLs not showing
+
+---
+
+Command: show ip route
+
+EXPECTED:
+Shows routes to:
+10.0.10.0/24 (Admin)
+10.0.20.0/24 (Finance)
+10.0.30.0/24 (Engineering)
+10.0.40.0/24 (Guest)
+
+PASS: All routes configured
+FAIL: Routes missing
+
+========================================
+SUMMARY OF TESTS
+========================================
+
+Test 1 (DHCP):          [ ] PASS  [ ] FAIL
+Test 2 (Ping Gateway):  [ ] PASS  [ ] FAIL
+Test 3 (DNS):           [ ] PASS  [ ] FAIL
+Test 4 (Inter-VLAN):    [ ] PASS  [ ] FAIL
+Test 5 (Guest Blocked): [ ] PASS  [ ] FAIL
+Test 6 (Router Status): [ ] PASS  [ ] FAIL
+
+If all 6 tests PASS ✓, your network is fully configured and operational!
+
+========================================
+PERFORMANCE METRICS
+========================================
+
+Measure these with Wireshark:
+
+Average Ping Time: ___ ms (Target: <10ms)
+DNS Query Time: ___ ms (Target: <5ms)
+DHCP Lease Time: ___ ms (Target: <1000ms)
+Packet Loss: ___% (Target: 0%)
+Throughput: ___ Mbps (Target: >90Mbps)
+
+========================================
+TROUBLESHOOTING
+========================================
+
+If tests FAIL:
+
+1. DHCP fails?
+   - Check DHCP server is running
+   - Verify DHCP relay on router
+   - Check DHCP pools are created
+
+2. DNS fails?
+   - Verify DNS server is running
+   - Check A records are added
+   - Verify DNS IP in DHCP pools
+
+3. Ping fails?
+   - Check all interfaces are "up up"
+   - Verify ACL is not blocking
+   - Check subnet masks
+
+4. Guest blocked works?
+   - If Guest CAN reach Admin (FAIL):
+     ACL is not working - recheck configuration
+   - If Guest CANNOT reach Admin (PASS):
+     Security is working! ✓
+
+5. General connectivity issues?
+   - Use "show cdp neighbors" to check connections
+   - Verify physical links are connected
+   - Check for address conflicts
+
+========================================
