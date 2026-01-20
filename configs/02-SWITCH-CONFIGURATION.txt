@@ -1,0 +1,138 @@
+!========================================
+! SWITCH BASIC SETUP
+!========================================
+
+enable
+configure terminal
+hostname ManagedSwitch
+no ip domain-lookup
+service timestamps log datetime msec
+logging buffered 4096
+exit
+
+!========================================
+! CREATE VLANs
+!========================================
+
+enable
+configure terminal
+
+vlan 10
+ name Admin
+ exit
+
+vlan 20
+ name Finance
+ exit
+
+vlan 30
+ name Engineering
+ exit
+
+vlan 40
+ name Guest
+ exit
+
+end
+write memory
+
+!========================================
+! ASSIGN PORTS TO VLANs
+!========================================
+
+enable
+configure terminal
+
+! Ports 1-6 → VLAN 10 (Admin)
+interface range FastEthernet 0/1-6
+ switchport mode access
+ switchport access vlan 10
+ no shutdown
+ exit
+
+! Ports 7-12 → VLAN 20 (Finance)
+interface range FastEthernet 0/7-12
+ switchport mode access
+ switchport access vlan 20
+ no shutdown
+ exit
+
+! Ports 13-18 → VLAN 30 (Engineering)
+interface range FastEthernet 0/13-18
+ switchport mode access
+ switchport access vlan 30
+ no shutdown
+ exit
+
+! Ports 19-24 → VLAN 40 (Guest)
+interface range FastEthernet 0/19-24
+ switchport mode access
+ switchport access vlan 40
+ no shutdown
+ exit
+
+end
+write memory
+
+!========================================
+! TRUNK PORT CONFIGURATION
+!========================================
+
+enable
+configure terminal
+
+interface GigabitEthernet 0/1
+ switchport mode trunk
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 10,20,30,40
+ no shutdown
+ exit
+
+end
+write memory
+
+!========================================
+! PORT SECURITY
+!========================================
+
+enable
+configure terminal
+
+interface range FastEthernet 0/1-24
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security violation shutdown
+ switchport port-security mac-address sticky
+ exit
+
+end
+write memory
+
+!========================================
+! DHCP SNOOPING
+!========================================
+
+enable
+configure terminal
+
+ip dhcp snooping
+ip dhcp snooping vlan 10,20,30,40
+
+interface range FastEthernet 0/1-2
+ ip dhcp snooping trust
+ exit
+
+interface GigabitEthernet 0/1
+ ip dhcp snooping trust
+ exit
+
+end
+write memory
+
+!========================================
+! VERIFICATION COMMANDS
+!========================================
+! show vlan brief
+! show mac-address-table
+! show port-security
+!========================================
