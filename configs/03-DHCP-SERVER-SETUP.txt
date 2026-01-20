@@ -1,0 +1,74 @@
+DHCP SERVER CONFIGURATION FOR CISCO PACKET TRACER
+==================================================
+
+Steps to Configure DHCP Pools:
+======================================
+
+1. Click DHCPServer → Click "Config" tab
+2. In the left panel, click "DHCP"
+3. Click "Add" button to create first pool
+4. Fill in the following information:
+
+POOL 1 - ADMIN_POOL
+==================
+Pool Name: ADMIN_POOL
+Network Address: 10.0.10.0
+Netmask: 255.255.255.0
+Default Gateway: 10.0.10.1
+DNS Server: 10.0.10.6
+Start IP Address: 10.0.10.100
+End IP Address: 10.0.10.254
+Lease Time: 86400 seconds (1 day)
+
+After filling, click "Save"
+
+POOL 2 - FINANCE_POOL
+====================
+Pool Name: FINANCE_POOL
+Network Address: 10.0.20.0
+Netmask: 255.255.255.0
+Default Gateway: 10.0.20.1
+DNS Server: 10.0.10.6
+Start IP Address: 10.0.20.100
+End IP Address: 10.0.20.254
+Lease Time: 86400 seconds (1 day)
+
+After filling, click "Save"
+
+POOL 3 - ENGINEERING_POOL
+==========================
+Pool Name: ENGINEERING_POOL
+Network Address: 10.0.30.0
+Netmask: 255.255.255.0
+Default Gateway: 10.0.30.1
+DNS Server: 10.0.10.6
+Start IP Address: 10.0.30.100
+End IP Address: 10.0.30.254
+Lease Time: 86400 seconds (1 day)
+
+After filling, click "Save"
+
+POOL 4 - GUEST_POOL
+====================
+Pool Name: GUEST_POOL
+Network Address: 10.0.40.0
+Netmask: 255.255.255.0
+Default Gateway: 10.0.40.1
+DNS Server: 10.0.10.6
+Start IP Address: 10.0.40.100
+End IP Address: 10.0.40.254
+Lease Time: 28800 seconds (8 hours)
+
+After filling, click "Save"
+
+5. Go to "Services" tab
+6. Verify DHCP service shows as "ON" or "Running"
+7. Done! DHCP server is ready.
+
+VERIFICATION:
+=============
+Clients should receive IPs like:
+- Admin: 10.0.10.100-254
+- Finance: 10.0.20.100-254
+- Engineering: 10.0.30.100-254
+- Guest: 10.0.40.100-254
