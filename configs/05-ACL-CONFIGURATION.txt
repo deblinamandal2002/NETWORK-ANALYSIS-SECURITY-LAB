@@ -1,0 +1,100 @@
+!========================================
+! ACCESS CONTROL LIST (ACL)
+! VLAN ISOLATION & SECURITY
+!========================================
+
+enable
+configure terminal
+
+!========================================
+! PRIMARY ACL - VLAN INTER-COMMUNICATION
+!========================================
+
+ip access-list extended ALLOW_INTER_VLAN
+
+! Allow Admin ↔ Finance
+permit ip 10.0.10.0 0.0.0.255 10.0.20.0 0.0.0.255
+permit ip 10.0.20.0 0.0.0.255 10.0.10.0 0.0.0.255
+
+! Allow Admin ↔ Engineering
+permit ip 10.0.10.0 0.0.0.255 10.0.30.0 0.0.0.255
+permit ip 10.0.30.0 0.0.0.255 10.0.10.0 0.0.0.255
+
+! Allow Finance ↔ Engineering
+permit ip 10.0.20.0 0.0.0.255 10.0.30.0 0.0.0.255
+permit ip 10.0.30.0 0.0.0.255 10.0.20.0 0.0.0.255
+
+! Block Guest from Admin
+deny ip 10.0.40.0 0.0.0.255 10.0.10.0 0.0.0.255
+
+! Block Guest from Finance
+deny ip 10.0.40.0 0.0.0.255 10.0.20.0 0.0.0.255
+
+! Block Guest from Engineering
+deny ip 10.0.40.0 0.0.0.255 10.0.30.0 0.0.0.255
+
+! Block all others from Guest
+deny ip 10.0.10.0 0.0.0.255 10.0.40.0 0.0.0.255
+deny ip 10.0.20.0 0.0.0.255 10.0.40.0 0.0.0.255
+deny ip 10.0.30.0 0.0.0.255 10.0.40.0 0.0.0.255
+
+! Allow all other traffic
+permit ip any any
+
+exit
+
+!========================================
+! APPLY ACL TO INTERFACES
+!========================================
+
+interface GigabitEthernet 0/0
+ ip access-group ALLOW_INTER_VLAN in
+ ip access-group ALLOW_INTER_VLAN out
+ exit
+
+interface GigabitEthernet 0/1
+ ip access-group ALLOW_INTER_VLAN in
+ ip access-group ALLOW_INTER_VLAN out
+ exit
+
+interface GigabitEthernet 0/2
+ ip access-group ALLOW_INTER_VLAN in
+ ip access-group ALLOW_INTER_VLAN out
+ exit
+
+interface GigabitEthernet 0/3
+ ip access-group ALLOW_INTER_VLAN in
+ ip access-group ALLOW_INTER_VLAN out
+ exit
+
+end
+write memory
+
+!========================================
+! SSH ACCESS CONTROL
+!========================================
+
+enable
+configure terminal
+
+ip access-list extended SSH_RESTRICT
+ deny tcp 10.0.40.0 0.0.0.255 any eq 22
+ permit tcp 10.0.10.0 0.0.0.255 any eq 22
+ permit tcp 10.0.20.0 0.0.0.255 any eq 22
+ permit tcp 10.0.30.0 0.0.0.255 any eq 22
+ exit
+
+interface GigabitEthernet 0/3
+ ip access-group SSH_RESTRICT in
+ exit
+
+end
+write memory
+
+!========================================
+! VERIFICATION COMMANDS
+!========================================
+! show access-lists
+! show ip access-lists
+! show ip interface GigabitEthernet 0/0 | include access list
+!========================================
