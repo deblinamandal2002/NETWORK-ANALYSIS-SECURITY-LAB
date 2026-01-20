@@ -1,0 +1,102 @@
+!========================================
+! FIREWALL CONFIGURATION
+!========================================
+
+enable
+configure terminal
+
+!========================================
+! INBOUND FIREWALL RULES
+!========================================
+
+ip access-list extended FIREWALL_INBOUND
+
+! Allow established TCP connections
+permit tcp any any established
+
+! Allow DNS (UDP Port 53)
+permit udp any any eq 53
+permit tcp any any eq 53
+
+! Allow HTTPS (Port 443)
+permit tcp any any eq 443
+
+! Allow HTTP (Port 80)
+permit tcp any any eq 80
+
+! Block SSH from Guest Network
+deny tcp 10.0.40.0 0.0.0.255 any eq 22
+
+! Allow ICMP (Ping/Echo Reply)
+permit icmp any any echo-reply
+
+! Log and drop all other traffic
+deny ip any any log
+
+exit
+
+!========================================
+! OUTBOUND FIREWALL RULES
+!========================================
+
+ip access-list extended FIREWALL_OUTBOUND
+
+! Allow established connections
+permit tcp any any established
+
+! Allow DNS outbound
+permit udp any any eq 53
+permit tcp any any eq 53
+
+! Allow HTTP/HTTPS outbound
+permit tcp any any eq 80
+permit tcp any any eq 443
+
+! Allow ICMP outbound
+permit icmp any any
+
+! Allow DHCP
+permit udp any eq 68 any eq 67
+
+! Log and drop everything else
+deny ip any any log
+
+exit
+
+!========================================
+! APPLY TO EXTERNAL INTERFACE
+!========================================
+
+interface GigabitEthernet 0/0
+ ip access-group FIREWALL_INBOUND in
+ ip access-group FIREWALL_OUTBOUND out
+ exit
+
+end
+write memory
+
+!========================================
+! DDoS PROTECTION (Optional)
+!========================================
+
+enable
+configure terminal
+
+! Rate limit per IP
+ip access-list extended DDoS_PROTECT
+ permit tcp any any eq 80 rate-limit 500
+ permit tcp any any eq 443 rate-limit 500
+ permit udp any any eq 53 rate-limit 1000
+ permit ip any any
+ exit
+
+end
+write memory
+
+!========================================
+! VERIFICATION COMMANDS
+!========================================
+! show access-lists FIREWALL_INBOUND
+! show access-lists FIREWALL_OUTBOUND
+! show ip access-lists
+!========================================
