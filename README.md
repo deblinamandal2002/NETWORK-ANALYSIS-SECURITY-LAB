@@ -195,7 +195,7 @@ This project demonstrates the design and implementation of a **secure, scalable 
 
 1. **Clone This Repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/Network-Security-Lab.git
+   git clone https://github.com/deblinamandal2002/Network-Security-Lab.git
    cd Network-Security-Lab
    ```
 
@@ -528,9 +528,9 @@ This project is licensed under the **MIT License** - see `LICENSE` file for deta
 
 ## 📞 Contact & Social
 
-- 🔗 **GitHub:** [Your GitHub Link]
-- 📧 **Email:** [Your Email]
-- 💼 **LinkedIn:** [Your LinkedIn]
+- 🔗 **GitHub:** [https://github.com/deblinamandal2002]
+- 📧 **Email:** [devizzzy@gmail.com]
+- 💼 **LinkedIn:** [https://www.linkedin.com/in/deblina-mandal-615507273/]
 
 ---
 
